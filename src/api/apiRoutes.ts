@@ -1,4 +1,5 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import v1Routes from './v1/v1Routes'
 
 class ApiRoutes {
   public router: Router;
@@ -9,9 +10,7 @@ class ApiRoutes {
   }
 
   private initializeRoutes() {
-    this.router.get('/', (req: Request, res: Response) => {
-      res.send('Hello From API !');
-    });
+    this.router.use('/v1', v1Routes);
   }
 }
 

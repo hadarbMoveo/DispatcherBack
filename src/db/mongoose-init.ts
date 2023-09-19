@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const mongoURI = process.env.MONGO_URI!
+const mongoURI = process.env.MONGO_URI ?? ""
 const dbName = process.env.DB_NAME
 
 mongoose.connect(mongoURI, {
