@@ -19,7 +19,14 @@ class ArticlesController {
         try {
             const apiKey = process.env.API_KEY
             const baseUrl = process.env.BASE_URL
-            const url = `${baseUrl}/top-headlines?country=us&apiKey=${apiKey}`;
+            const articlesNumber = req.query.pageSize
+            const page = req.query.page;
+            
+            if (!(articlesNumber || page)) {
+                res.status(400).send('parameter "page" and "articlesNumber" is required.');
+                return;
+            }
+            const url = `${baseUrl}/top-headlines?country=us&apiKey=${apiKey}&pageSize=${articlesNumber}&page=${page}`;
 
             const response = await axios.get(url);
             const articles = response.data
@@ -45,7 +52,7 @@ class ArticlesController {
             const url = `${baseUrl}/everything?q=${query}&apiKey=${apiKey}`;
 
             const response = await axios.get(url);
-            const articles = response.data.articles;
+            const articles = response.data
             
             res.json(articles); 
         } catch (error) {
