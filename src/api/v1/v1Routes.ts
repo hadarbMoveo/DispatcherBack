@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import ArticlesController from './controllers/articles.controller'
 
 class V1Routes {
     public router: Router;
@@ -9,9 +10,8 @@ class V1Routes {
     }
   
     private initializeRoutes() {
-      this.router.get('/', (req: Request, res: Response) => {
-        res.send('Hello From API !');
-      });
+     const articlesController = new ArticlesController()
+      this.router.use('/articles', articlesController.router);
     }
   }
   
