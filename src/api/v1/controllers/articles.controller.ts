@@ -22,7 +22,7 @@ class ArticlesController {
             const articlesNumber = req.query.pageSize
             const page = req.query.page;
             
-            if (!(articlesNumber || page)) {
+            if (this.isNullOrUndefined(articlesNumber) || this.isNullOrUndefined(page)) {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
@@ -57,6 +57,10 @@ class ArticlesController {
             console.error(error);
             res.status(500).send('Error fetching search results');
         }
+    }
+
+    isNullOrUndefined(value:any) {
+        return value == null || value == undefined;
     }
 }
 
