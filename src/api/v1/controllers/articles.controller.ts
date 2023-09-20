@@ -26,7 +26,7 @@ class ArticlesController {
             const articlesNumber = req.query.pageSize
             const page = req.query.page;
             
-            if (!(articlesNumber || page)) {
+            if (this.isNull(articlesNumber) || this.isNull(page)) {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
@@ -62,6 +62,7 @@ class ArticlesController {
             res.status(500).send('Error fetching search results');
         }
     }
+
 
     private async getFavoriteArticles(req: Request, res: Response) {
         try {
@@ -107,6 +108,10 @@ class ArticlesController {
             console.error("Error removing article:", error);
             return res.status(500).send("Error removing article");
           }
+    }
+
+    isNull(value:any) {
+        return value == null;
     }
 
 }
