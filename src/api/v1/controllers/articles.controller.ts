@@ -66,7 +66,6 @@ class ArticlesController {
         }
     }
 
-
     private async getFavoriteArticles(req: Request, res: Response) {
         try {
             const userId = req.user.userId;
@@ -81,7 +80,7 @@ class ArticlesController {
             const responseObj = {
               articles: articles
             };
-        
+
             res.json(responseObj);
           } catch (error) {
             console.error("Error retrieving articles:", error);
