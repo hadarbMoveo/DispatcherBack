@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
 import Article from '../../../db/models/article.model'
+import User from '../../../db/models/user.model'
 import axios from 'axios';
 import AuthController from './auth.controller'; 
+import { authenticateToken } from '../../../middleware/authMiddleware';
 
 
 class ArticlesController {
@@ -16,11 +18,11 @@ class ArticlesController {
     }
 
     private initializeRoutes() {
-        this.router.get('/getAll',AuthController.authenticateToken ,this.getAllArticles.bind(this))
-        this.router.get('/getSearch', AuthController.authenticateToken,this.getArticlesBySearch.bind(this))
-        this.router.get('/getFavorites', AuthController.authenticateToken,this.getFavoriteArticles.bind(this))
-        this.router.post('/addFavorite',AuthController.authenticateToken, this.addFavoriteArticle.bind(this))
-        this.router.delete('/removeFavorite/:id',AuthController.authenticateToken, this.removeFavoriteArticle.bind(this))
+        this.router.get('/getAll',authenticateToken ,this.getAllArticles.bind(this))
+        this.router.get('/getSearch', authenticateToken,this.getArticlesBySearch.bind(this))
+        this.router.get('/getFavorites',authenticateToken,this.getFavoriteArticles.bind(this))
+        this.router.post('/addFavorite',authenticateToken, this.addFavoriteArticle.bind(this))
+        this.router.delete('/removeFavorite/:id',authenticateToken, this.removeFavoriteArticle.bind(this))
     }
 
     private async getAllArticles(req: Request, res: Response) {
@@ -67,12 +69,19 @@ class ArticlesController {
 
     private async getFavoriteArticles(req: Request, res: Response) {
         try {
-            const articles = await Article.find();
+            const userId = req.user.userId;
+            const user = await User.findById(userId);
+            if (!user) {
+              return res.status(404).json({ error: 'User not found' });
+            }
+        
+            const userEmail = user.email;
+            const articles = await Article.find({ user: userEmail });
         
             const responseObj = {
-                articles: articles
+              articles: articles
             };
-    
+        
             res.json(responseObj);
           } catch (error) {
             console.error("Error retrieving articles:", error);

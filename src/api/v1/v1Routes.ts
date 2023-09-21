@@ -12,10 +12,11 @@ class V1Routes {
   
     private initializeRoutes() {
      const articlesController = new ArticlesController()
-     const authController = new AuthController ()
-      this.router.use('/articles', articlesController.router);
-      this.router.use('/auth', authController.router);
+     const authController = new AuthController()
+     this.router.use('/articles', articlesController.router);
+     this.router.use('/auth', authController.router);
     }
+
   }
   
   const v1Routes = new V1Routes().router;
