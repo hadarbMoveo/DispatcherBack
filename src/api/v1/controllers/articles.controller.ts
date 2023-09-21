@@ -1,6 +1,10 @@
 import { Router, Request, Response } from 'express';
 import Article from '../../../db/models/article.model'
+import User from '../../../db/models/user.model'
 import axios from 'axios';
+import AuthController from './auth.controller'; 
+import { authenticateToken } from '../../../middleware/authMiddleware';
+
 
 class ArticlesController {
 
@@ -14,19 +18,19 @@ class ArticlesController {
     }
 
     private initializeRoutes() {
-        this.router.get('/getAll', this.getAllArticles.bind(this))
-        this.router.get('/getSearch', this.getArticlesBySearch.bind(this))
-        this.router.get('/getFavorites', this.getFavoriteArticles.bind(this))
-        this.router.post('/addFavorite', this.addFavoriteArticle.bind(this))
-        this.router.delete('/removeFavorite/:id', this.removeFavoriteArticle.bind(this))
+        this.router.get('/getAll',authenticateToken ,this.getAllArticles.bind(this))
+        this.router.get('/getSearch', authenticateToken,this.getArticlesBySearch.bind(this))
+        this.router.get('/getFavorites',authenticateToken,this.getFavoriteArticles.bind(this))
+        this.router.post('/addFavorite',authenticateToken, this.addFavoriteArticle.bind(this))
+        this.router.delete('/removeFavorite/:id',authenticateToken, this.removeFavoriteArticle.bind(this))
     }
 
     private async getAllArticles(req: Request, res: Response) {
         try {
             const articlesNumber = req.query.pageSize
             const page = req.query.page;
-            
-            if (this.isNull(articlesNumber) || this.isNull(page)) {
+
+            if (!(articlesNumber || page)) {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
@@ -45,7 +49,6 @@ class ArticlesController {
     private async getArticlesBySearch(req: Request, res: Response) {
         try {
             const query = req.query.q;
-            
             if (!query) {
                 res.status(400).send('Search query parameter "q" is required.');
                 return;
@@ -65,12 +68,19 @@ class ArticlesController {
 
     private async getFavoriteArticles(req: Request, res: Response) {
         try {
-            const articles = await Article.find();
+            const userId = req.user.userId;
+            const user = await User.findById(userId);
+            if (!user) {
+              return res.status(404).json({ error: 'User not found' });
+            }
+        
+            const userEmail = user.email;
+            const articles = await Article.find({ user: userEmail });
         
             const responseObj = {
-                articles: articles
+              articles: articles
             };
-    
+
             res.json(responseObj);
           } catch (error) {
             console.error("Error retrieving articles:", error);
@@ -108,11 +118,6 @@ class ArticlesController {
             return res.status(500).send("Error removing article");
           }
     }
-
-    isNull(value: any) {
-        return value == null;
-    }
-
 }
 
 export default ArticlesController;
