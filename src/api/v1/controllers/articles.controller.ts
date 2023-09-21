@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import Article from '../../../db/models/article.model'
 import axios from 'axios';
+import AuthController from './auth.controller'; 
+
 
 class ArticlesController {
 
@@ -14,19 +16,19 @@ class ArticlesController {
     }
 
     private initializeRoutes() {
-        this.router.get('/getAll', this.getAllArticles.bind(this))
-        this.router.get('/getSearch', this.getArticlesBySearch.bind(this))
-        this.router.get('/getFavorites', this.getFavoriteArticles.bind(this))
-        this.router.post('/addFavorite', this.addFavoriteArticle.bind(this))
-        this.router.delete('/removeFavorite/:id', this.removeFavoriteArticle.bind(this))
+        this.router.get('/getAll',AuthController.authenticateToken ,this.getAllArticles.bind(this))
+        this.router.get('/getSearch', AuthController.authenticateToken,this.getArticlesBySearch.bind(this))
+        this.router.get('/getFavorites', AuthController.authenticateToken,this.getFavoriteArticles.bind(this))
+        this.router.post('/addFavorite',AuthController.authenticateToken, this.addFavoriteArticle.bind(this))
+        this.router.delete('/removeFavorite/:id',AuthController.authenticateToken, this.removeFavoriteArticle.bind(this))
     }
 
     private async getAllArticles(req: Request, res: Response) {
         try {
             const articlesNumber = req.query.pageSize
             const page = req.query.page;
-            
-            if (this.isNull(articlesNumber) || this.isNull(page)) {
+
+            if (!(articlesNumber || page)) {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
@@ -45,7 +47,6 @@ class ArticlesController {
     private async getArticlesBySearch(req: Request, res: Response) {
         try {
             const query = req.query.q;
-            
             if (!query) {
                 res.status(400).send('Search query parameter "q" is required.');
                 return;
@@ -109,11 +110,6 @@ class ArticlesController {
             return res.status(500).send("Error removing article");
           }
     }
-
-    isNull(value:any) {
-        return value == null;
-    }
-
 }
 
 export default ArticlesController;
