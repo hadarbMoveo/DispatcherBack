@@ -16,6 +16,10 @@ class App {
     this.initializeMiddlewares();
     this.initializeRoutes();
     this.initializeErrorHandling();
+    
+    this.app.get('/', (req, res) => {
+    res.send('Hello, World!');
+    });
   }
 
   private initializeMiddlewares() {
