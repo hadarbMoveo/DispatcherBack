@@ -20,6 +20,10 @@ class App {
     this.app.get('/', (req, res) => {
     res.send('Hello, World!');
     });
+
+    this.app.get('/github', (req, res) => {
+    res.send("https://github.com/hadarbMoveo/DispatcherBack.git");
+    });
   }
 
   private initializeMiddlewares() {
