@@ -4,6 +4,7 @@ import path from 'path';
 import errorMiddleware from './middleware/errorMiddleware';
 import apiRoutes from './api/apiRoutes';
 import './db/mongoose-init';
+const cors = require("cors");
 
 class App {
   public app: Application;
@@ -16,9 +17,14 @@ class App {
     this.initializeMiddlewares();
     this.initializeRoutes();
     this.initializeErrorHandling();
+
+    this.app.get('/', (req, res) => {
+      res.send('Hello, World!');
+    });
   }
 
   private initializeMiddlewares() {
+    this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
   }
@@ -30,7 +36,6 @@ class App {
   private initializeRoutes() {
     this.app.use('/api', apiRoutes);
   }
-
 
   public listen() {
     this.app.listen(this.port, () => {
