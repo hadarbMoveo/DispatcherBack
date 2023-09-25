@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application,Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import errorMiddleware from './middleware/errorMiddleware';
@@ -18,11 +18,11 @@ class App {
     this.initializeRoutes();
     this.initializeErrorHandling();
     
-    this.app.get('/', (req, res) => {
+    this.app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
     });
 
-    this.app.get('/github', (req, res) => {
+    this.app.get('/github', (req: Request, res: Response) => {
     res.send("https://github.com/hadarbMoveo/DispatcherBack.git");
     });
   }
