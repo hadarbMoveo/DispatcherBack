@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - npm install --location=global typescript
+      - npm install
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+cache:
+  paths:
+    - "node_modules/*/"
+artifacts:
+  files:
+    - "*/"
+  discard-paths: no
+  base-directory: ./
