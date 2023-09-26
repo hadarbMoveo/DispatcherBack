@@ -1,4 +1,4 @@
-import express, { Application,Request, Response } from 'express';
+import express, { Application,Request, Response,NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import errorMiddleware from './middleware/errorMiddleware';
@@ -21,16 +21,23 @@ class App {
     this.app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
     });
-
-    this.app.get('/github', (req: Request, res: Response) => {
-    res.send("https://github.com/hadarbMoveo/DispatcherBack.git");
-    });
   }
 
   private initializeMiddlewares() {
-    this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cors({ origin: "*" }))
+
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+      );
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  
+      next();
+    });
   }
 
   private initializeErrorHandling() {
@@ -39,6 +46,9 @@ class App {
 
   private initializeRoutes() {
     this.app.use('/api', apiRoutes);
+    this.app.use("*", (req: Request, res: Response) => {
+      res.json({});
+    });
   }
 
   public listen() {
@@ -46,6 +56,7 @@ class App {
       console.log(`Server is running on port ${this.port}`);
     });
   }
+  
 }
 
 export default App;
