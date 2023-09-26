@@ -19,7 +19,8 @@ cache:
   paths:
     - "node_modules/*/"
 artifacts:
+  type: zip
   files:
-    - "*/"
+    - '**/*'
   discard-paths: no
   base-directory: ./
