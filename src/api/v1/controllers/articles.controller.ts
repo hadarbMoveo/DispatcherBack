@@ -34,6 +34,10 @@ class ArticlesController {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
+
+            console.log(articlesNumber)
+            console.log(page)
+            
             const url = `${this.baseUrl}/top-headlines?country=us&apiKey=${this.apiKey}&pageSize=${articlesNumber}&page=${page}`;
 
             const response = await axios.get(url);
