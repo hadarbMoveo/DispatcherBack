@@ -18,8 +18,8 @@ class ArticlesController {
     }
 
     private initializeRoutes() {
-        this.router.get('/getAll',authenticateToken ,this.getAllArticles.bind(this))
-        this.router.get('/getSearch', authenticateToken,this.getArticlesBySearch.bind(this))
+        this.router.get('/getAll/:pageSize/:page',authenticateToken ,this.getAllArticles.bind(this))
+        this.router.get('/getSearch/:q', authenticateToken,this.getArticlesBySearch.bind(this))
         this.router.get('/getFavorites',authenticateToken,this.getFavoriteArticles.bind(this))
         this.router.post('/addFavorite',authenticateToken, this.addFavoriteArticle.bind(this))
         this.router.delete('/removeFavorite/:id',authenticateToken, this.removeFavoriteArticle.bind(this))
@@ -27,17 +27,14 @@ class ArticlesController {
 
     private async getAllArticles(req: Request, res: Response) {
         try {
-            const articlesNumber = req.query.pageSize
-            const page = req.query.page;
+            const articlesNumber = req.params.pageSize;
+            const page = req.params.page;
 
-            if (!(articlesNumber || page)) {
+            if (!articlesNumber || !page) {
                 res.status(400).send('parameter "page" and "articlesNumber" is required.');
                 return;
             }
 
-            console.log(articlesNumber)
-            console.log(page)
-            
             const url = `${this.baseUrl}/top-headlines?country=us&apiKey=${this.apiKey}&pageSize=${articlesNumber}&page=${page}`;
 
             const response = await axios.get(url);
@@ -52,7 +49,7 @@ class ArticlesController {
 
     private async getArticlesBySearch(req: Request, res: Response) {
         try {
-            const query = req.query.q;
+            const query = req.params.q;
             if (!query) {
                 res.status(400).send('Search query parameter "q" is required.');
                 return;
